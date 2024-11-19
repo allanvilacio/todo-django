@@ -1,0 +1,59 @@
+{% extends "todo/base.html" %}
+
+{% block title %}
+  Tarefas concluidas
+{% endblock title %}
+
+{% block main %}
+<div class="row pt-2">
+    <div class="col">
+      <div id="lista-todo" class="list-group" style="max-height: 1000px; overflow-y: auto;">
+      </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="modal-update-todo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form id="form-update-todo">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-5" >Editar tarefa</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="input-group mb-3">
+                      <span for="data-entrega" class="input-group-text">Data engreta</span>
+                      <input type="datetime-local" class="form-control" id="data-entrega" name="data-entrega"
+                          style="max-width: 180px;">
+                  </div>
+                  <div class="mb-3">
+                      <label for="titulo" class="form-label">Titulo</label>
+                      <input type="text" class="form-control" id="titulo" name="titulo"
+                          placeholder="Digite um titulo" required>
+                  </div>
+                  <div class="mb-3">
+                      <label for="detalhe" class="form-label">Detalhe</label>
+                      <textarea class="form-control" id="detalhe" name="detalhe" rows="3" ></textarea>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <button type="submit" class="btn btn-primary" >Atualizar</button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+{% endblock main %}
+
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        updateConcluidos();
+    })
+</script>
+{% endblock script %}
