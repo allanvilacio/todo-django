@@ -5,31 +5,36 @@ const headers = {
 };
 
 
-const newTodo = document.getElementById('modal-nova-tarefa');
-let modalnewTodo = null
-if (newTodo) {
-    modalnewTodo = new bootstrap.Modal(newTodo, { keyboard: true });
+const modalNewTodo = document.getElementById('modal-new-todo');
+let modalmodalNewTodoBootstrap = null
+if (modalNewTodo) {
+    modalmodalNewTodoBootstrap = new bootstrap.Modal(modalNewTodo, { keyboard: true });
 }
 
-const updateModal = document.getElementById('modal-update-todo');
-let modalUpdate = null
-if (updateModal) {
-    modalUpdate = new bootstrap.Modal(updateModal, { keyboard: true });
+
+
+const modalUpdateTodo = document.getElementById('modal-update-todo');
+let modalUpdateTodoBootstrap = null
+if (modalUpdateTodo) {
+    modalUpdateTodoBootstrap = new bootstrap.Modal(modalUpdateTodo, { keyboard: true });
 }
+
 
 
 function formatDate(date) {
     let year = date.getFullYear();
     let month = (date.getMonth() + 1).toString().padStart(2, '0');
     let day = date.getDate().toString().padStart(2, '0');
+    let hours = date.getHours().toString().padStart(2,'0');
+    let minutes = date.getMinutes().toString().padStart(2,'0');
 
-    return `${year}-${month}-${day}`;
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
 
-async function getTodos() {
+async function getTodo() {
     path = window.location.pathname
 
-    const response = await fetch('/listar-todos/', {
+    const response = await fetch('/list-todos/', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
@@ -41,8 +46,8 @@ async function getTodos() {
     return data
 }
 
-async function listarTodos() {
-    const response = await getTodos();
+async function listTodos() {
+    const response = await getTodo();
 
     const tbody = document.querySelector('#lista-todo');
     tbody.textContent = '';
@@ -54,7 +59,7 @@ async function listarTodos() {
 
         div.ondblclick = function () { showModalUpdate(todo) }
 
-
+        let dateEntregaFormat = new Date(todo.data_entrega)
         div.innerHTML = `
             <div>
                 <div class="form-check">
@@ -64,7 +69,7 @@ async function listarTodos() {
                 <div class="w-100">
                 <h5 class="mb-1">${todo.titulo}</h5>
                 ${todo.detalhe == null ? '' : `<p class="mb-1">${todo.detalhe}</p>`}
-                ${todo.data_entrega == null ? '' : `<small class="p-1 pe-2 ps-2 border rounded">${todo.data_entrega}</small>`}
+                ${todo.data_entrega == null ? '' : `<small class="p-1 pe-2 ps-2 border rounded">${formatDate(dateEntregaFormat)}</small>`}
             </div>
             <div>       
                 <div class="dropdown">
@@ -82,9 +87,9 @@ async function listarTodos() {
 
 }
 
-async function novaTarefa(event) {
+async function newTodo(event) {
     event.preventDefault();
-    const form = document.querySelector('#form-nova-tarefa');
+    const form = document.querySelector('#form-new-todo');
     const data_entrega = form.querySelector('[name="data-entrega"]').value;
     const titulo = form.querySelector('[name="titulo"]').value;
     const detalhe = form.querySelector('[name="detalhe"]').value;
@@ -99,10 +104,10 @@ async function novaTarefa(event) {
                 data_entrega: data_entrega
             })
         });
-        listarTodos();
+        listTodos();
 
 
-        modalnewTodo.hide()
+        modalmodalNewTodoBootstrap.hide()
     } catch (error) {
         console.log(error);
     }
@@ -120,7 +125,7 @@ async function deleteTodo(pk) {
 
         });
 
-        listarTodos();
+        listTodos();
 
     }
     catch (erro) {
@@ -138,7 +143,7 @@ async function checkTodo(key) {
                 key
             })
         });
-        listarTodos();
+        listTodos();
 
     } catch (error) {
         console.log(error);
@@ -147,7 +152,7 @@ async function checkTodo(key) {
 }
 
 function showModalUpdate(todo) {
-    const formUpdate = updateModal.querySelector('form');
+    const formUpdate = modalUpdateTodo.querySelector('form');
     formUpdate.querySelector('[name="data-entrega"]').value = todo.data_entrega;
     formUpdate.querySelector('[name="titulo"]').value = todo.titulo;
     formUpdate.querySelector('[name="detalhe"]').value = todo.detalhe;
@@ -155,7 +160,7 @@ function showModalUpdate(todo) {
     formUpdate.onsubmit = function (event) {
         updateTodo(event, todo.id)
     };
-    modalUpdate.show();
+    modalUpdateTodoBootstrap.show();
 
 }
 
@@ -178,8 +183,8 @@ async function updateTodo(event, id) {
             })
 
         })
-        listarTodos();
-        modalUpdate.hide();
+        listTodos();
+        modalUpdateTodoBootstrap.hide();
 
     }
     catch (erro) {
@@ -188,18 +193,15 @@ async function updateTodo(event, id) {
 }
 
 function updateHome() {
-    listarTodos();
-    let modalNovaTarefa = document.getElementById('modal-nova-tarefa');
-
-    modalNovaTarefa.addEventListener('hidden.bs.modal', function () {
-
-        document.getElementById('data-entrega').value = null;
-        document.getElementById('titulo').value = null;
-        document.getElementById('detalhe').value = null;
+    listTodos();
+    modalNewTodo.addEventListener('hidden.bs.modal', function () {
+        modalNewTodo.querySelector('#data-entrega').value = null;
+        modalNewTodo.querySelector('#titulo').value = null;
+        modalNewTodo.querySelector('#detalhe').value = null;
 
     })
 }
 
-function updateConcluidos() {
-    listarTodos();
+function updateComplated() {
+    listTodos();
 }

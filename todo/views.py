@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 import json
 from .models import Todo
-from django.core.serializers import serialize
 from django.utils import timezone
 
 
@@ -16,14 +15,14 @@ def todo_home(request):
     return render(request, 'todo/home.html')
 
 @login_required 
-def todo_concluidas(request):
+def todo_complated(request):
     return render(request, 'todo/concluidas.html')
 
 @login_required 
-def listar_todos(request):
+def list_todos(request):
     body = json.loads(request.body)
 
-    if body.get('path')=='/concluidas/':
+    if body.get('path')=='/complated/':
         todos = Todo.objects.filter(data_conclusao__isnull=False, user_id= request.user.id)
         todos =list(todos.values())
         return JsonResponse({'status':200, 'data':todos})
